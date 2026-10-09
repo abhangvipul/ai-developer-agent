@@ -12,8 +12,8 @@ st.set_page_config(
     layout="wide"
 )
 
-st.title("🤖 CodePilot AI")
-st.markdown("AI-Powered Coding & Web Development Assistant.")
+st.title("🤖 AI Developer & Coding Agent Dashboard")
+st.markdown("Generate optimized code algorithms or complete web portfolio templates locally.")
 
 # 2. Check Streamlit Secrets Vault First, Fallback to Manual Inputs
 groq_key = ""
@@ -65,14 +65,14 @@ def run_web_agent(user_query, g_key, t_key):
     
     for turn in range(3):
         try:
-            # Using the active flagship model ID 'openai/gpt-oss-120b'
             chat_completion = client.chat.completions.create(
                 model="openai/gpt-oss-120b", 
                 messages=current_messages,
                 temperature=0.2,
                 extra_body={"reasoning_effort": "low"}
             )
-            agent_response = chat_completion.choices.message.content
+            # 👇 FIXED SYNTAX: Properly indexing choices array to get text content 👇
+            agent_response = chat_completion.choices[0].message.content
             
             if '"action": "web_search"' in agent_response:
                 start_idx = agent_response.find("{")
@@ -109,7 +109,7 @@ if st.button("🚀 Execute Agent Task"):
             with tab2:
                 extracted_code = re.findall(r"```(?:html|python)?(.*?)```", response, re.DOTALL)
                 if extracted_code:
-                    final_code = extracted_code.strip()
+                    final_code = extracted_code[0].strip()
                     st.code(final_code, language="html" if "html" in user_prompt.lower() else "python")
                     
                     is_html = "html" in user_prompt.lower()
