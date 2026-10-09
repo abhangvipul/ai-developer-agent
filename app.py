@@ -161,7 +161,8 @@ def run_web_agent(user_query, g_key, t_key):
                 temperature=0.2,
                 extra_body={"reasoning_effort": "low"}
             )
-            agent_response = chat_completion.choices.message.content
+            # 👇 FIXED PAYLOAD SYNTAX HERE 👇
+            agent_response = chat_completion.choices[0].message.content
             
             if '"action": "web_search"' in agent_response:
                 start_idx = agent_response.find("{")
@@ -186,8 +187,8 @@ user_prompt = st.text_area(
     placeholder="Describe your design specifications or engineering objectives here...\nExample: 'Build a fully responsive dashboard webpage using clean semantic HTML elements and CSS variables.'"
 )
 
-# 🧠 FIXED: Added explicit column weights [1, 2, 1] to partition layout correctly without crashes
-_, col_btn, _ = st.columns([1, 2, 1])
+# Execution button layout row
+col_left, col_btn, col_right = st.columns([2, 3, 2])
 with col_btn:
     execute_clicked = st.button("🚀 Initialise Compiling Request Thread")
 
@@ -204,7 +205,7 @@ if execute_clicked:
                 st.markdown(response)
                 
             extracted_code = re.findall(r"```(?:html|python)?(.*?)```", response, re.DOTALL)
-            final_code = extracted_code.strip() if extracted_code else response
+            final_code = extracted_code[0].strip() if extracted_code else response
             is_html = "html" in user_prompt.lower()
             
             with tab2:
