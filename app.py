@@ -84,14 +84,14 @@ st.markdown("""
         border-bottom: 2px solid #38bdf8 !important;
     }
     </style>
-""", unsafe_index=True)
+""", unsafe_allow_html=True) # 🧠 FIXED PARAMETER NAME HERE
 
 # 3. Main Dashboard Headers Structure Layout
-col_logo, col_title = st.columns([1, 11])
+col_logo, col_title = st.columns([1, 25])
 with col_logo:
-    st.markdown("<h1 style='margin-top:0;'>⚡</h1>", unsafe_html=True)
+    st.markdown("<h1 style='margin-top:0;'>⚡</h1>", unsafe_allow_html=True)
 with col_title:
-    st.markdown("<h1 style='color:#F8FAFC; margin-bottom:0;'>CodePilot AI</h1>", unsafe_html=True)
+    st.markdown("<h1 style='color:#F8FAFC; margin-bottom:0;'>CodePilot AI</h1>", unsafe_allow_html=True)
     st.markdown("<p style='color:#94A3B8; font-size:1.15rem; margin-top:2px;'>Advanced Neural Studio for Code Optimization & Layout Engineering</p>", unsafe_html=True)
 
 st.markdown("---")
@@ -178,26 +178,24 @@ user_prompt = st.text_area(
 )
 
 # Center alignment container partitioning logic layout grid
-_, col_btn, _ = st.columns([1, 2, 1])
+_, col_btn, _ = st.columns([1, 1, 1])
 with col_btn:
     execute_clicked = st.button("🚀 Initialise Compiling Request Thread")
 
 if execute_clicked:
     if groq_key and tavily_key and user_prompt:
-        # Re-evaluating execution status using animated spinner context configurations
         with st.spinner("🧠 Orchestrating agent logic, web parameters, and context compilation branches..."):
             response = run_web_agent(user_prompt, groq_key, tavily_key)
             
             st.markdown("### 📤 Output Workspace Canvas Layout")
             
-            # Formatted Navigation Panel containing distinct visual workspace options
             tab1, tab2, tab3 = st.tabs(["📝 Formatted Architecture View", "💻 Raw Production Code Source", "🖥️ Sandboxed Live Interface Preview"])
             
             with tab1:
                 st.markdown(response)
                 
             extracted_code = re.findall(r"```(?:html|python)?(.*?)```", response, re.DOTALL)
-            final_code = extracted_code.strip() if extracted_code else response
+            final_code = extracted_code[0].strip() if extracted_code else response
             is_html = "html" in user_prompt.lower()
             
             with tab2:
@@ -214,7 +212,7 @@ if execute_clicked:
                     
             with tab3:
                 if is_html:
-                    st.markdown("<p style='color:#38bdf8; font-weight:500;'>🌐 Sandbox Frame Canvas Instance Viewport:</p>", unsafe_html=True)
+                    st.markdown("<p style='color:#38bdf8; font-weight:500;'>🌐 Sandbox Frame Canvas Instance Viewport:</p>", unsafe_allow_html=True)
                     components.html(final_code, height=650, scrolling=True)
                 else:
                     st.warning("⚠️ Live Canvas Render Execution requires active HTML output layouts within the execution context template stream.")
