@@ -14,33 +14,36 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# 2. Injecting Premium Custom Styling (Dark Cyberpunk Theme with Code Background)
+# 2. Injecting High-Contrast Light Mode Studio Styling
 st.markdown("""
     <style>
-    /* Premium Abstract Cyber Code Background Vector Context */
+    /* Clean Light Technical Grid Background */
     .stApp {
-        background: linear-gradient(135deg, rgba(10, 15, 30, 0.95), rgba(15, 23, 42, 0.98)), 
-                    url('https://unsplash.com');
-        background-size: cover;
-        background-position: center;
-        background-attachment: fixed;
+        background-color: #F8FAFC !important;
+        background-image: radial-gradient(#CBD5E1 1px, transparent 1px) !important;
+        background-size: 20px 20px !important;
     }
     
-    /* Elegant Modern Glassmorphism Container Framing */
+    /* High-Contrast Main Title and Subtitle Text overrides */
+    h1, h2, h3, p {
+        color: #0F172A !important;
+    }
+    
+    /* Structured Light-Mode Glassmorphism Input Frame */
     div.stTextArea textarea {
-        background-color: rgba(30, 41, 59, 0.5) !important;
-        color: #E2E8F0 !important;
-        border: 1px solid rgba(56, 189, 248, 0.3) !important;
+        background-color: #FFFFFF !important;
+        color: #0F172A !important;
+        border: 2px solid #E2E8F0 !important;
         border-radius: 12px !important;
         font-family: 'Fira Code', monospace !important;
-        backdrop-filter: blur(10px);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05) !important;
     }
     div.stTextArea textarea:focus {
-        border-color: #38bdf8 !important;
-        box-shadow: 0 0 10px rgba(56, 189, 248, 0.4) !important;
+        border-color: #0284c7 !important;
+        box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.2) !important;
     }
     
-    /* Neon Blue Glowing Interactive Button Action Design */
+    /* Vibrant Professional Blue Interaction Button Layout */
     div.stButton > button {
         background: linear-gradient(90deg, #0284c7, #0369a1) !important;
         color: white !important;
@@ -48,52 +51,57 @@ st.markdown("""
         border: none !important;
         padding: 12px 28px !important;
         border-radius: 8px !important;
-        transition: all 0.3s ease-in-out !important;
-        box-shadow: 0 4px 15px rgba(2, 132, 199, 0.3) !important;
+        transition: all 0.2s ease-in-out !important;
+        box-shadow: 0 4px 12px rgba(2, 132, 199, 0.2) !important;
         width: 100%;
     }
     div.stButton > button:hover {
-        background: linear-gradient(90deg, #0369a1, #0284c7) !important;
-        transform: translateY(-2px) !important;
-        box-shadow: 0 6px 20px rgba(2, 132, 199, 0.5) !important;
+        background: linear-gradient(90deg, #0369a1, #024e73) !important;
+        transform: translateY(-1px) !important;
+        box-shadow: 0 6px 16px rgba(2, 132, 199, 0.3) !important;
     }
     
-    /* Custom CSS Sidebar Layout Formatting override */
+    /* Dedicated Crisp Light Sidebar Overrides */
     section[data-testid="stSidebar"] {
-        background-color: rgba(15, 23, 42, 0.9) !important;
-        border-right: 1px solid rgba(56, 189, 248, 0.1) !important;
+        background-color: #FFFFFF !important;
+        border-right: 1px solid #E2E8F0 !important;
+    }
+    section[data-testid="stSidebar"] h1, 
+    section[data-testid="stSidebar"] h2, 
+    section[data-testid="stSidebar"] h3, 
+    section[data-testid="stSidebar"] span,
+    section[data-testid="stSidebar"] p {
+        color: #334155 !important;
     }
     
-    /* Enhanced Navigation Tabs Interface Structure */
+    /* Clean Tab Navigation Bar Configurations */
     .stTabs [data-baseweb="tab-list"] {
         gap: 8px;
+        border-bottom: 2px solid #E2E8F0 !important;
     }
     .stTabs [data-baseweb="tab"] {
-        background-color: rgba(30, 41, 59, 0.4) !important;
-        border: 1px solid rgba(255,255,255,0.05) !important;
+        background-color: #F1F5F9 !important;
+        border: 1px solid #E2E8F0 !important;
         border-radius: 6px 6px 0 0 !important;
-        color: #94A3B8 !important;
-        padding: 8px 16px !important;
+        color: #64748B !important;
+        padding: 8px 20px !important;
+        font-weight: 500 !important;
     }
     .stTabs [data-baseweb="tab"]:hover {
-        color: #38bdf8 !important;
+        color: #0284c7 !important;
+        background-color: #E2E8F0 !important;
     }
     .stTabs [aria-selected="true"] {
-        background-color: rgba(56, 189, 248, 0.15) !important;
-        color: #38bdf8 !important;
-        border-bottom: 2px solid #38bdf8 !important;
+        background-color: #FFFFFF !important;
+        color: #0284c7 !important;
+        border-bottom: 2px solid #0284c7 !important;
     }
     </style>
 """, unsafe_allow_html=True)
 
 # 3. Main Dashboard Headers Structure Layout
-col_logo, col_title = st.columns([1, 15])
-with col_logo:
-    st.markdown("<h1 style='margin-top:0;'>⚡</h1>", unsafe_allow_html=True)
-with col_title:
-    st.markdown("<h1 style='color:#F8FAFC; margin-bottom:0;'>CodePilot AI</h1>", unsafe_allow_html=True)
-    # 🧠 FIXED PARAMETER NAME BELOW TO unsafe_allow_html=True
-    st.markdown("<p style='color:#94A3B8; font-size:1.15rem; margin-top:2px;'>Advanced Neural Studio for Code Optimization & Layout Engineering</p>", unsafe_allow_html=True)
+st.markdown("<h1 style='margin-bottom: 0px;'>⚡ CodePilot AI</h1>", unsafe_allow_html=True)
+st.markdown("<p style='font-size:1.15rem; margin-top:2px; font-weight: 400;'>Advanced Neural Studio for Code Optimization & Layout Engineering</p>", unsafe_allow_html=True)
 
 st.markdown("---")
 
@@ -153,7 +161,7 @@ def run_web_agent(user_query, g_key, t_key):
                 temperature=0.2,
                 extra_body={"reasoning_effort": "low"}
             )
-            agent_response = chat_completion.choices[0].message.content
+            agent_response = chat_completion.choices.message.content
             
             if '"action": "web_search"' in agent_response:
                 start_idx = agent_response.find("{")
@@ -174,12 +182,12 @@ def run_web_agent(user_query, g_key, t_key):
 # 6. Main Prompt Creation Canvas Area Layout
 user_prompt = st.text_area(
     "✍️ Core Development Requirements Prompt Canvas", 
-    height=160,
+    height=150,
     placeholder="Describe your design specifications or engineering objectives here...\nExample: 'Build a fully responsive dashboard webpage using clean semantic HTML elements and CSS variables.'"
 )
 
-# Center alignment container partitioning logic layout grid
-_, col_btn, _ = st.columns([2, 1, 2])
+# Execution column trigger row
+_, col_btn, _ = st.columns()
 with col_btn:
     execute_clicked = st.button("🚀 Initialise Compiling Request Thread")
 
@@ -196,7 +204,7 @@ if execute_clicked:
                 st.markdown(response)
                 
             extracted_code = re.findall(r"```(?:html|python)?(.*?)```", response, re.DOTALL)
-            final_code = extracted_code[0].strip() if extracted_code else response
+            final_code = extracted_code.strip() if extracted_code else response
             is_html = "html" in user_prompt.lower()
             
             with tab2:
@@ -213,7 +221,7 @@ if execute_clicked:
                     
             with tab3:
                 if is_html:
-                    st.markdown("<p style='color:#38bdf8; font-weight:500;'>🌐 Sandbox Frame Canvas Instance Viewport:</p>", unsafe_allow_html=True)
+                    st.markdown("<p style='color:#0284c7; font-weight:500;'>🌐 Sandbox Frame Canvas Instance Viewport:</p>", unsafe_allow_html=True)
                     components.html(final_code, height=650, scrolling=True)
                 else:
                     st.warning("⚠️ Live Canvas Render Execution requires active HTML output layouts within the execution context template stream.")
