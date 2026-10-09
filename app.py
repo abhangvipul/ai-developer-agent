@@ -4,45 +4,123 @@ import json
 import re
 from groq import Groq
 from langchain_community.tools.tavily_search import TavilySearchResults
-# 👇 NEW IMPORT FOR LIVE PREVIEW FRAMEWORK 👇
 import streamlit.components.v1 as components
 
-# 1. Web Page Styling Configuration
+# 1. Page Configuration
 st.set_page_config(
-    page_title="AI Coding & Web Agent",
-    page_icon="🤖",
-    layout="wide"
+    page_title="CodePilot AI - Advanced Developer Studio",
+    page_icon="⚡",
+    layout="wide",
+    initial_sidebar_state="expanded"
 )
 
-st.title("🤖 CodePilot AI")
-st.markdown("AI-Powered Coding & Web Development Assistant.")
+# 2. Injecting Premium Custom Styling (Dark Cyberpunk Theme with Code Background)
+st.markdown("""
+    <style>
+    /* Premium Abstract Cyber Code Background Vector Context */
+    .stApp {
+        background: linear-gradient(135deg, rgba(10, 15, 30, 0.95), rgba(15, 23, 42, 0.98)), 
+                    url('https://unsplash.com');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+    }
+    
+    /* Elegant Modern Glassmorphism Container Framing */
+    div.stTextArea textarea {
+        background-color: rgba(30, 41, 59, 0.5) !important;
+        color: #E2E8F0 !important;
+        border: 1px solid rgba(56, 189, 248, 0.3) !important;
+        border-radius: 12px !important;
+        font-family: 'Fira Code', monospace !important;
+        backdrop-filter: blur(10px);
+    }
+    div.stTextArea textarea:focus {
+        border-color: #38bdf8 !important;
+        box-shadow: 0 0 10px rgba(56, 189, 248, 0.4) !important;
+    }
+    
+    /* Neon Blue Glowing Interactive Button Action Design */
+    div.stButton > button {
+        background: linear-gradient(90deg, #0284c7, #0369a1) !important;
+        color: white !important;
+        font-weight: 600 !important;
+        border: none !important;
+        padding: 12px 28px !important;
+        border-radius: 8px !important;
+        transition: all 0.3s ease-in-out !important;
+        box-shadow: 0 4px 15px rgba(2, 132, 199, 0.3) !important;
+        width: 100%;
+    }
+    div.stButton > button:hover {
+        background: linear-gradient(90deg, #0369a1, #0284c7) !important;
+        transform: translateY(-2px) !important;
+        box-shadow: 0 6px 20px rgba(2, 132, 199, 0.5) !important;
+    }
+    
+    /* Custom CSS Sidebar Layout Formatting override */
+    section[data-testid="stSidebar"] {
+        background-color: rgba(15, 23, 42, 0.9) !important;
+        border-right: 1px solid rgba(56, 189, 248, 0.1) !important;
+    }
+    
+    /* Enhanced Navigation Tabs Interface Structure */
+    .stTabs [data-baseweb="tab-list"] {
+        gap: 8px;
+    }
+    .stTabs [data-baseweb="tab"] {
+        background-color: rgba(30, 41, 59, 0.4) !important;
+        border: 1px solid rgba(255,255,255,0.05) !important;
+        border-radius: 6px 6px 0 0 !important;
+        color: #94A3B8 !important;
+        padding: 8px 16px !important;
+    }
+    .stTabs [data-baseweb="tab"]:hover {
+        color: #38bdf8 !important;
+    }
+    .stTabs [aria-selected="true"] {
+        background-color: rgba(56, 189, 248, 0.15) !important;
+        color: #38bdf8 !important;
+        border-bottom: 2px solid #38bdf8 !important;
+    }
+    </style>
+""", unsafe_index=True)
 
-# 2. Check Streamlit Secrets Vault First, Fallback to Manual Inputs
+# 3. Main Dashboard Headers Structure Layout
+col_logo, col_title = st.columns([1, 11])
+with col_logo:
+    st.markdown("<h1 style='margin-top:0;'>⚡</h1>", unsafe_html=True)
+with col_title:
+    st.markdown("<h1 style='color:#F8FAFC; margin-bottom:0;'>CodePilot AI</h1>", unsafe_html=True)
+    st.markdown("<p style='color:#94A3B8; font-size:1.15rem; margin-top:2px;'>Advanced Neural Studio for Code Optimization & Layout Engineering</p>", unsafe_html=True)
+
+st.markdown("---")
+
+# 4. Check Streamlit Secrets Vault First, Fallback to Manual Inputs
 groq_key = ""
 tavily_key = ""
 
-# Attempt to pull keys securely from the cloud environment background vault
 if "GROQ_API_KEY" in st.secrets:
     groq_key = st.secrets["GROQ_API_KEY"]
 if "TAVILY_API_KEY" in st.secrets:
     tavily_key = st.secrets["TAVILY_API_KEY"]
 
-# If keys are missing (e.g. running locally), display manual entry fields in the sidebar
 if not groq_key or not tavily_key:
-    st.sidebar.header("🔑 API Credentials (Local Fallback)")
+    st.sidebar.markdown("### 🔑 API Core Credentials")
     if not groq_key:
-        groq_key = st.sidebar.text_input("Groq API Key", type="password")
+        groq_key = st.sidebar.text_input("Groq API Key", type="password", help="Input your Groq cloud endpoint security handshake token")
     if not tavily_key:
-        tavily_key = st.sidebar.text_input("Tavily API Key", type="password")
+        tavily_key = st.sidebar.text_input("Tavily API Key", type="password", help="Input your Tavily infrastructure system search token")
     
     if not groq_key or not tavily_key:
-        st.warning("⚠️ Please provide both your Groq and Tavily API keys in the sidebar to get started.")
+        st.sidebar.warning("⚠️ Action Required: Provide API Keys above to unlock neural compiling threads.")
 else:
-    st.sidebar.success("🔒 API Keys securely loaded from Cloud Vault!")
+    st.sidebar.markdown("### 🔐 Security Shield Status")
+    st.sidebar.success("🔒 Cloud Key Injection Active")
+    st.sidebar.info("Dashboard is fully authenticated with credentials pulled securely from background environments.")
 
-# 3. Agent Logic Engine
+# 5. Agent Logic Engine
 def run_web_agent(user_query, g_key, t_key):
-    # Set the key in the environment variables dynamically for the Tavily tool
     os.environ["TAVILY_API_KEY"] = t_key
     client = Groq(api_key=g_key)
     search_tool = TavilySearchResults(max_results=2)
@@ -68,14 +146,13 @@ def run_web_agent(user_query, g_key, t_key):
     
     for turn in range(3):
         try:
-            # Using the production-ready tier on Groq
             chat_completion = client.chat.completions.create(
                 model="openai/gpt-oss-120b", 
                 messages=current_messages,
                 temperature=0.2,
                 extra_body={"reasoning_effort": "low"}
             )
-            agent_response = chat_completion.choices[0].message.content
+            agent_response = chat_completion.choices.message.content
             
             if '"action": "web_search"' in agent_response:
                 start_idx = agent_response.find("{")
@@ -93,35 +170,41 @@ def run_web_agent(user_query, g_key, t_key):
             return f"Error occurred: {str(e)}"
     return "Agent timed out."
 
-# 4. Main UI Input Form
-user_prompt = st.text_area("✍️ What should the agent build for you?", 
-                           placeholder="Example: 'Write a recursive factorial program in Python' or 'Create a modern HTML portfolio template'")
+# 6. Main Prompt Creation Canvas Area Layout
+user_prompt = st.text_area(
+    "✍️ Core Development Requirements Prompt Canvas", 
+    height=160,
+    placeholder="Describe your design specifications or engineering objectives here...\nExample: 'Build a fully responsive dashboard webpage using clean semantic HTML elements and CSS variables.'"
+)
 
-if st.button("🚀 Execute Agent Task"):
+# Center alignment container partitioning logic layout grid
+_, col_btn, _ = st.columns([1, 2, 1])
+with col_btn:
+    execute_clicked = st.button("🚀 Initialise Compiling Request Thread")
+
+if execute_clicked:
     if groq_key and tavily_key and user_prompt:
-        with st.spinner("🤖 Agent is coordinating logic and tools..."):
+        # Re-evaluating execution status using animated spinner context configurations
+        with st.spinner("🧠 Orchestrating agent logic, web parameters, and context compilation branches..."):
             response = run_web_agent(user_prompt, groq_key, tavily_key)
             
-            st.success("✅ Task Completed!")
+            st.markdown("### 📤 Output Workspace Canvas Layout")
             
-            # 👇 MODIFIED: ADDED A THIRD TAB TO THE USER INTERFACE LAYOUT 👇
-            tab1, tab2, tab3 = st.tabs(["📝 Formatted View", "🌐 Raw Code View", "🖥️ Live Visual Preview"])
+            # Formatted Navigation Panel containing distinct visual workspace options
+            tab1, tab2, tab3 = st.tabs(["📝 Formatted Architecture View", "💻 Raw Production Code Source", "🖥️ Sandboxed Live Interface Preview"])
             
             with tab1:
                 st.markdown(response)
                 
-            # Pre-compile the regex extraction so it's accessible across tabs safely
             extracted_code = re.findall(r"```(?:html|python)?(.*?)```", response, re.DOTALL)
-            final_code = extracted_code[0].strip() if extracted_code else response
+            final_code = extracted_code.strip() if extracted_code else response
             is_html = "html" in user_prompt.lower()
             
             with tab2:
                 if extracted_code:
                     st.code(final_code, language="html" if is_html else "python")
-                    
-                    # File download capability
                     st.download_button(
-                        label="📥 Download Generated File", 
+                        label="📥 Download Generated File Archive", 
                         data=final_code, 
                         file_name="index.html" if is_html else "script.py", 
                         mime="text/html" if is_html else "text/plain"
@@ -129,13 +212,11 @@ if st.button("🚀 Execute Agent Task"):
                 else:
                     st.text(response)
                     
-            # 👇 NEW: RENDER LIVE WEB PAGES INSIDE THE THIRD TAB INDEPENDENTLY 👇
             with tab3:
                 if is_html:
-                    st.info("ℹ️ Rendered canvas preview of your generated web application template:")
-                    # Creates a sandboxed live layout viewport context window frame on the dashboard page
-                    components.html(final_code, height=600, scrolling=True)
+                    st.markdown("<p style='color:#38bdf8; font-weight:500;'>🌐 Sandbox Frame Canvas Instance Viewport:</p>", unsafe_html=True)
+                    components.html(final_code, height=650, scrolling=True)
                 else:
-                    st.warning("⚠️ Live Visual Preview rendering is only supported for tasks generating HTML layouts.")
+                    st.warning("⚠️ Live Canvas Render Execution requires active HTML output layouts within the execution context template stream.")
     else:
-        st.error("❌ Please make sure your credentials and prompt input are not empty.")
+        st.error("❌ Thread Blocked: Ensure both API key hashes and core engineering prompt inputs are populated before executing pipeline.")
