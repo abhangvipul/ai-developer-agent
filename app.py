@@ -15,13 +15,28 @@ st.set_page_config(
 st.title("🤖 CodePilot AI")
 st.markdown("AI-Powered Coding & Web Development Assistant.")
 
-# 2. Sidebar Setup for API Keys
-st.sidebar.header("🔑 API Credentials")
-groq_key = st.sidebar.text_input("Groq API Key", type="password")
-tavily_key = st.sidebar.text_input("Tavily API Key", type="password")
+# 2. Check Streamlit Secrets Vault First, Fallback to Manual Inputs
+groq_key = ""
+tavily_key = ""
 
+# Attempt to pull keys securely from the cloud environment background vault
+if "GROQ_API_KEY" in st.secrets:
+    groq_key = st.secrets["GROQ_API_KEY"]
+if "TAVILY_API_KEY" in st.secrets:
+    tavily_key = st.secrets["TAVILY_API_KEY"]
+
+# If keys are missing (e.g. running locally), display manual entry fields in the sidebar
 if not groq_key or not tavily_key:
-    st.warning("⚠️ Please provide both your Groq and Tavily API keys in the sidebar to get started.")
+    st.sidebar.header("🔑 API Credentials (Local Fallback)")
+    if not groq_key:
+        groq_key = st.sidebar.text_input("Groq API Key", type="password")
+    if not tavily_key:
+        tavily_key = st.sidebar.text_input("Tavily API Key", type="password")
+    
+    if not groq_key or not tavily_key:
+        st.warning("⚠️ Please provide both your Groq and Tavily API keys in the sidebar to get started.")
+else:
+    st.sidebar.success("🔒 API Keys securely loaded from Cloud Vault!")
 
 # 3. Agent Logic Engine
 def run_web_agent(user_query, g_key, t_key):
@@ -51,7 +66,7 @@ def run_web_agent(user_query, g_key, t_key):
     
     for turn in range(3):
         try:
-            # Using the production-ready llama-3.3-70b-specdec tier on Groq
+            # Using the production-ready tier on Groq
             chat_completion = client.chat.completions.create(
                 model="openai/gpt-oss-120b", 
                 messages=current_messages,
