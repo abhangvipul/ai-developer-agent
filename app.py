@@ -24,11 +24,6 @@ st.markdown("""
         background-size: 20px 20px !important;
     }
     
-    /* High-Contrast Main Title and Subtitle Text overrides */
-    h1, h2, h3, p {
-        color: #0F172A !important;
-    }
-    
     /* Structured Light-Mode Glassmorphism Input Frame */
     div.stTextArea textarea {
         background-color: #FFFFFF !important;
