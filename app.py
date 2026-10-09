@@ -186,8 +186,8 @@ user_prompt = st.text_area(
     placeholder="Describe your design specifications or engineering objectives here...\nExample: 'Build a fully responsive dashboard webpage using clean semantic HTML elements and CSS variables.'"
 )
 
-# Execution column trigger row
-_, col_btn, _ = st.columns()
+# 🧠 FIXED: Added explicit column weights [1, 2, 1] to partition layout correctly without crashes
+_, col_btn, _ = st.columns([1, 2, 1])
 with col_btn:
     execute_clicked = st.button("🚀 Initialise Compiling Request Thread")
 
