@@ -12,34 +12,20 @@ st.set_page_config(
     layout="wide"
 )
 
-st.title("🤖 AI Developer & Coding Agent Dashboard")
-st.markdown("Generate optimized code algorithms or complete web portfolio templates locally.")
+st.title("🤖 CodePilot AI")
+st.markdown("AI-Powered Coding & Web Development Assistant.")
 
-# 2. Check Streamlit Secrets Vault First, Fallback to Manual Inputs
-groq_key = ""
-tavily_key = ""
+# 2. Sidebar Setup for API Keys
+st.sidebar.header("🔑 API Credentials")
+groq_key = st.sidebar.text_input("Groq API Key", type="password")
+tavily_key = st.sidebar.text_input("Tavily API Key", type="password")
 
-# Attempt to load securely from Streamlit Cloud Secrets
-if "GROQ_API_KEY" in st.secrets:
-    groq_key = st.secrets["GROQ_API_KEY"]
-if "TAVILY_API_KEY" in st.secrets:
-    tavily_key = st.secrets["TAVILY_API_KEY"]
-
-# If keys are missing from secrets (e.g., running locally), show the sidebar inputs
 if not groq_key or not tavily_key:
-    st.sidebar.header("🔑 API Credentials (Local Fallback)")
-    if not groq_key:
-        groq_key = st.sidebar.text_input("Groq API Key", type="password")
-    if not tavily_key:
-        tavily_key = st.sidebar.text_input("Tavily API Key", type="password")
-    
-    if not groq_key or not tavily_key:
-        st.warning("⚠️ Please provide both your Groq and Tavily API keys in the sidebar or add them to the cloud vault.")
-else:
-    st.sidebar.success("🔒 API Keys securely loaded from Cloud Vault!")
+    st.warning("⚠️ Please provide both your Groq and Tavily API keys in the sidebar to get started.")
 
 # 3. Agent Logic Engine
 def run_web_agent(user_query, g_key, t_key):
+    # Set the key in the environment variables dynamically for the Tavily tool
     os.environ["TAVILY_API_KEY"] = t_key
     client = Groq(api_key=g_key)
     search_tool = TavilySearchResults(max_results=2)
@@ -65,13 +51,13 @@ def run_web_agent(user_query, g_key, t_key):
     
     for turn in range(3):
         try:
+            # Using the production-ready llama-3.3-70b-specdec tier on Groq
             chat_completion = client.chat.completions.create(
                 model="openai/gpt-oss-120b", 
                 messages=current_messages,
                 temperature=0.2,
                 extra_body={"reasoning_effort": "low"}
             )
-            # 👇 FIXED SYNTAX: Properly indexing choices array to get text content 👇
             agent_response = chat_completion.choices[0].message.content
             
             if '"action": "web_search"' in agent_response:
@@ -101,17 +87,20 @@ if st.button("🚀 Execute Agent Task"):
             
             st.success("✅ Task Completed!")
             
+            # Layout Response Tabs
             tab1, tab2 = st.tabs(["📝 Formatted View", "🌐 Raw Code View"])
             
             with tab1:
                 st.markdown(response)
                 
             with tab2:
+                # Use regex to isolate code inside markdown wrappers for clean UI display
                 extracted_code = re.findall(r"```(?:html|python)?(.*?)```", response, re.DOTALL)
                 if extracted_code:
                     final_code = extracted_code[0].strip()
                     st.code(final_code, language="html" if "html" in user_prompt.lower() else "python")
                     
+                    # File download capability
                     is_html = "html" in user_prompt.lower()
                     st.download_button(
                         label="📥 Download Generated File", 
