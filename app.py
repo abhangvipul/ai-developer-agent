@@ -4,6 +4,7 @@ import json
 import re
 from groq import Groq
 from langchain_community.tools.tavily_search import TavilySearchResults
+# 👇 NEW IMPORT FOR LIVE PREVIEW FRAMEWORK 👇
 import streamlit.components.v1 as components
 
 # 1. Web Page Styling Configuration
@@ -20,11 +21,13 @@ st.markdown("AI-Powered Coding & Web Development Assistant.")
 groq_key = ""
 tavily_key = ""
 
+# Attempt to pull keys securely from the cloud environment background vault
 if "GROQ_API_KEY" in st.secrets:
     groq_key = st.secrets["GROQ_API_KEY"]
 if "TAVILY_API_KEY" in st.secrets:
     tavily_key = st.secrets["TAVILY_API_KEY"]
 
+# If keys are missing (e.g. running locally), display manual entry fields in the sidebar
 if not groq_key or not tavily_key:
     st.sidebar.header("🔑 API Credentials (Local Fallback)")
     if not groq_key:
@@ -39,6 +42,7 @@ else:
 
 # 3. Agent Logic Engine
 def run_web_agent(user_query, g_key, t_key):
+    # Set the key in the environment variables dynamically for the Tavily tool
     os.environ["TAVILY_API_KEY"] = t_key
     client = Groq(api_key=g_key)
     search_tool = TavilySearchResults(max_results=2)
@@ -64,13 +68,14 @@ def run_web_agent(user_query, g_key, t_key):
     
     for turn in range(3):
         try:
+            # Using the production-ready tier on Groq
             chat_completion = client.chat.completions.create(
                 model="openai/gpt-oss-120b", 
                 messages=current_messages,
                 temperature=0.2,
                 extra_body={"reasoning_effort": "low"}
             )
-            agent_response = chat_completion.choices.message.content
+            agent_response = chat_completion.choices[0].message.content
             
             if '"action": "web_search"' in agent_response:
                 start_idx = agent_response.find("{")
@@ -88,26 +93,9 @@ def run_web_agent(user_query, g_key, t_key):
             return f"Error occurred: {str(e)}"
     return "Agent timed out."
 
-# 4. Feature 1: One-Click Prompt Preset Buttons Layout
-st.markdown("##### ⚡ Quick Templates")
-col1, col2 = st.columns(2)
-
-# Initialize prompt state if it doesn't exist
-if "preset_prompt" not in st.session_state:
-    st.session_state.preset_prompt = ""
-
-if col1.button("📋 Load Factorial Template"):
-    st.session_state.preset_prompt = "Write a recursive factorial program in Python."
-
-if col2.button("🌐 Load Portfolio Template"):
-    st.session_state.preset_prompt = "Create a modern single-page HTML portfolio template for a web developer with nice embedded CSS styles."
-
-# 5. Main UI Input Form
-user_prompt = st.text_area(
-    "✍️ What should the agent build for you?", 
-    value=st.session_state.preset_prompt,
-    placeholder="Select a template above or type your own custom request..."
-)
+# 4. Main UI Input Form
+user_prompt = st.text_area("✍️ What should the agent build for you?", 
+                           placeholder="Example: 'Write a recursive factorial program in Python' or 'Create a modern HTML portfolio template'")
 
 if st.button("🚀 Execute Agent Task"):
     if groq_key and tavily_key and user_prompt:
@@ -116,20 +104,22 @@ if st.button("🚀 Execute Agent Task"):
             
             st.success("✅ Task Completed!")
             
-            # Feature 2: Expanded Response View incorporating Live Rendering Framework
+            # 👇 MODIFIED: ADDED A THIRD TAB TO THE USER INTERFACE LAYOUT 👇
             tab1, tab2, tab3 = st.tabs(["📝 Formatted View", "🌐 Raw Code View", "🖥️ Live Visual Preview"])
             
             with tab1:
                 st.markdown(response)
                 
-            # Extract code block using regular expressions
+            # Pre-compile the regex extraction so it's accessible across tabs safely
             extracted_code = re.findall(r"```(?:html|python)?(.*?)```", response, re.DOTALL)
-            final_code = extracted_code.strip() if extracted_code else response
+            final_code = extracted_code[0].strip() if extracted_code else response
             is_html = "html" in user_prompt.lower()
             
             with tab2:
                 if extracted_code:
                     st.code(final_code, language="html" if is_html else "python")
+                    
+                    # File download capability
                     st.download_button(
                         label="📥 Download Generated File", 
                         data=final_code, 
@@ -139,12 +129,13 @@ if st.button("🚀 Execute Agent Task"):
                 else:
                     st.text(response)
                     
+            # 👇 NEW: RENDER LIVE WEB PAGES INSIDE THE THIRD TAB INDEPENDENTLY 👇
             with tab3:
                 if is_html:
-                    st.info("ℹ️ Showing sandboxed live view of the generated code below:")
-                    # Safely render the extracted HTML code block as an embedded visual window element
-                    components.html(final_code, height=500, scrolling=True)
+                    st.info("ℹ️ Rendered canvas preview of your generated web application template:")
+                    # Creates a sandboxed live layout viewport context window frame on the dashboard page
+                    components.html(final_code, height=600, scrolling=True)
                 else:
-                    st.warning("⚠️ Live Visual Preview is only available for web requests containing HTML code layouts.")
+                    st.warning("⚠️ Live Visual Preview rendering is only supported for tasks generating HTML layouts.")
     else:
         st.error("❌ Please make sure your credentials and prompt input are not empty.")
