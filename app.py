@@ -84,15 +84,16 @@ st.markdown("""
         border-bottom: 2px solid #38bdf8 !important;
     }
     </style>
-""", unsafe_allow_html=True) # 🧠 FIXED PARAMETER NAME HERE
+""", unsafe_allow_html=True)
 
 # 3. Main Dashboard Headers Structure Layout
-col_logo, col_title = st.columns([1, 25])
+col_logo, col_title = st.columns([1, 15])
 with col_logo:
     st.markdown("<h1 style='margin-top:0;'>⚡</h1>", unsafe_allow_html=True)
 with col_title:
     st.markdown("<h1 style='color:#F8FAFC; margin-bottom:0;'>CodePilot AI</h1>", unsafe_allow_html=True)
-    st.markdown("<p style='color:#94A3B8; font-size:1.15rem; margin-top:2px;'>Advanced Neural Studio for Code Optimization & Layout Engineering</p>", unsafe_html=True)
+    # 🧠 FIXED PARAMETER NAME BELOW TO unsafe_allow_html=True
+    st.markdown("<p style='color:#94A3B8; font-size:1.15rem; margin-top:2px;'>Advanced Neural Studio for Code Optimization & Layout Engineering</p>", unsafe_allow_html=True)
 
 st.markdown("---")
 
@@ -152,7 +153,7 @@ def run_web_agent(user_query, g_key, t_key):
                 temperature=0.2,
                 extra_body={"reasoning_effort": "low"}
             )
-            agent_response = chat_completion.choices.message.content
+            agent_response = chat_completion.choices[0].message.content
             
             if '"action": "web_search"' in agent_response:
                 start_idx = agent_response.find("{")
@@ -178,7 +179,7 @@ user_prompt = st.text_area(
 )
 
 # Center alignment container partitioning logic layout grid
-_, col_btn, _ = st.columns([1, 1, 1])
+_, col_btn, _ = st.columns([2, 1, 2])
 with col_btn:
     execute_clicked = st.button("🚀 Initialise Compiling Request Thread")
 
